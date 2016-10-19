@@ -12,7 +12,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 import br.com.avaliacao.reconcavo.cliente.Cliente;
 import br.com.avaliacao.reconcavo.servidor.Servidor;
@@ -141,16 +140,4 @@ public class TelaServidor extends JFrame {
 
 	}
 
-	/**
-	 * Metodo para inicializar a TelaServidor
-	 * @param args parametros iniciais
-	 */
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				new TelaServidor();
-			}
-		});
-	}
 }

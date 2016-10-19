@@ -12,7 +12,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 import br.com.avaliacao.reconcavo.cliente.Cliente;
 import br.com.avaliacao.reconcavo.util.Constantes;
@@ -176,19 +175,6 @@ public class TelaCliente extends JFrame{
 			txtTermo.setText("");
 			txtPorta.setEnabled(true);
 		}
-	}
-	
-	/**
-	 * Metodo para inicializar a TelaCliente
-	 * @param args parametros iniciais
-	 */
-	public static void main(String[] args){
-		SwingUtilities.invokeLater(new Runnable() {
-	         @Override
-	         public void run() {
-	            new TelaCliente();  // Let the constructor do the job
-	         }
-	      });
 	}
 	
 }
