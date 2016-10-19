@@ -15,12 +15,15 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import br.com.avaliacao.reconcavo.cliente.Cliente;
+import br.com.avaliacao.reconcavo.util.Constantes;
 
+/**
+ * TelaCliente é a classe que apresenta as informações via SWING.
+ * @author alex.costa
+ *
+ */
 public class TelaCliente extends JFrame{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private JTextField txtPorta;
 	private JTextField txtIp;
@@ -65,6 +68,11 @@ public class TelaCliente extends JFrame{
 		botaoConectar.addActionListener(new BotaoConectarActionListner());
 	}
 	
+	/**
+	 * BotaoConectarActionListner é a classe que representa o clique no botão de conectar ao socket
+	 * @author alex.costa
+	 *
+	 */
 	public class BotaoConectarActionListner implements ActionListener{
 
 		private String ip;
@@ -94,7 +102,7 @@ public class TelaCliente extends JFrame{
 				if(isStatus){
 					controlaCampos(isStatus);
 					isStatus = false;
-					cliente.conectar();
+					cliente.conectar(Constantes.CODIGO_CONTINUA_SERVIDOR);
 				}else{
 					controlaCampos(isStatus);
 					isStatus = true;
@@ -105,12 +113,18 @@ public class TelaCliente extends JFrame{
 			} catch (IOException e1) {
 				controlaCampos(isStatus);
 				isStatus = true;
+				cliente = null;
 				JOptionPane.showMessageDialog(null, "Erro ao conectar", "Atenção", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		
 	}
 	
+	/**
+	 * BotaoConectarActionListner é a classe que representa o clique no botão de buscar string no socket
+	 * @author alex.costa
+	 *
+	 */
 	public class BotaoBuscarActionListner implements ActionListener{
 
 		private String termo;
@@ -164,6 +178,10 @@ public class TelaCliente extends JFrame{
 		}
 	}
 	
+	/**
+	 * Metodo para inicializar a TelaCliente
+	 * @param args parametros iniciais
+	 */
 	public static void main(String[] args){
 		SwingUtilities.invokeLater(new Runnable() {
 	         @Override

@@ -1,128 +1,67 @@
 package br.com.avaliacao.reconcavo.servidor;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import br.com.avaliacao.reconcavo.thread.ClienteThread;
+import br.com.avaliacao.reconcavo.util.Constantes;
+
+/**
+ * Servidor é uma thread responsável por criar a conexão com o socket e receber os Clientes 
+ * que se conectam.
+ * @author alex.costa
+ * @see ClienteThread
+ *
+ */
 public class Servidor extends Thread {
 
 	protected Socket clientSocket;
 	private ServerSocket serverSocket;
 	private String caminho;
 	private int porta;
-	private DataOutputStream out;
-	private DataInputStream in;
 
+	/**
+	 * Cria um novo Servidor definindo caminho e porta
+	 * @param caminho do arquivo
+	 * @param porta para inicializar socket
+	 */
 	public Servidor(String caminho, int porta) {
 		this.caminho = caminho;
 		this.porta = porta;
 	}
 
-	public void iniciar() throws IOException {
-
-		serverSocket = new ServerSocket(porta);
-		System.out.println("Conexão com o socket criado");
-
-		while (true) {
-			System.out.println("Aguardando por conexões");
-			new Servidor(serverSocket.accept());
-		}
-
-	}
-
-	public void parar() throws IOException {
-
-		if (!serverSocket.isClosed()) {
-			serverSocket.close();
-		}
-		
-		if(null != out){
-			out.close();
-		}
-		
-		if(null != in){
-			in.close();
-		}
-		
-	}
-
-	private Servidor(Socket clientSoc) {
-		clientSocket = clientSoc;
-		start();
-	}
-
 	@Override
 	public void run() {
-		System.out.println("Cliente conectado !");
 
 		try {
-			out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
-			in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
+			serverSocket = new ServerSocket(porta);
+			System.out.println("Conexão com o servidor criado");
+			while (true) {
 
-			String inputLine;
+				clientSocket = serverSocket.accept();
 
-			while ((inputLine = in.readUTF()) != null) {
-				System.out.println("Server: " + inputLine);
+				int code = clientSocket.getInputStream().read();
 
-				String retorno = pesquisaArquivo(inputLine);
-
-				System.out.print(retorno);
-
-				out.writeUTF(retorno);
-				out.flush();
-
-				if (inputLine.equals("!__##desconectar##__!"))
+				if (code == Constantes.CODIGO_PARA_SERVIDOR) {
 					break;
+				}
+
+				System.out.println("Aguardando por conexões");
+				new ClienteThread(clientSocket, caminho).start();
+
 			}
-
-			out.close();
-			in.close();
-			clientSocket.close();
 		} catch (IOException e) {
-			System.err.println("Problema na comunicação com o Servidor");
+			System.err.println("Erro ao conectar ao servidor.");
 		}
-	}
-
-	private synchronized String pesquisaArquivo(String termo) {
-
-		File file = new File(this.caminho);
-		BufferedReader reader = null;
-		StringBuffer sb = new StringBuffer();
 
 		try {
-			reader = new BufferedReader(new FileReader(file));
-			String text = null;
-
-			while ((text = reader.readLine()) != null) {
-
-				if (text.contains(termo)) {
-					sb.append(text);
-					sb.append(System.lineSeparator());
-				}
-
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			serverSocket.close();
+			System.out.println("Conexão com o servidor perdida");
 		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (IOException e) {
-			}
-		}
+			System.out.println("Erro ao desconectar com o servidor");
 
-		return sb.toString();
+		}
 
 	}
 
